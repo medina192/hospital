@@ -14,7 +14,7 @@ const dbConnection = async() => {
 
     } catch(error){
         console.log(error);
-        throw new Error('pendejo');
+        throw new Error('error config database');
     }
 
 

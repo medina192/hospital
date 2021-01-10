@@ -15,18 +15,20 @@ app.use(cors());
 // Mean_user
 // IByIJX4ou0NLQMbj
 
+// body reading and parseo 
+app.use(express.json());
+
 // database
 dbConnection();
 
 
+// Routes
+app.use('/api/users', require('./routes/users'));
+app.use('/api/login', require('./routes/auth'));
 
-app.get('/', (req, res) => {
-    res.json({
-        hi: 'hi'
-    });
-})
+
 
 app.listen(process.env.PORT, () => {
 
-        console.log(`server running on port ${process.env.PORT}`);
+    console.log(`server running on port ${process.env.PORT}`);
 });
