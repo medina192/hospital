@@ -6,13 +6,23 @@ const { generateToken } = require('../middlewares/generateToken');
 const getUsers = async (req, res) => {
 
     let users = {};
+    const since = Number(req.query.since) || 0;
+    const until = Number(req.query.until) || 5;
 
     try{
-         users = await User.find({});
-        console.log('well');
+
+        const [ users, total ] = await Promise.all([
+            User.find({})
+            .skip(since)
+            .limit(until),
+
+            User.estimatedDocumentCount()
+        ]);
+
         res.json({
             users,
-            uid: req.uid
+            uid: req.uid,
+            total
         });
     } catch(error){
         console.log(error);
