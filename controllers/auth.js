@@ -2,11 +2,11 @@
 const User = require('../models/user');
 const bcrypt = require('bcryptjs');
 const { generateToken } = require('../middlewares/generateToken');
+const { googleVerify } = require('../helpers/google_verify');
 
 const login = async(req, res) => {
 
     const { email, password } = req.body;
-
 
     try{
 
@@ -47,7 +47,57 @@ const login = async(req, res) => {
     }
 }
 
+
+
+
+
+
+const googleSignIn = async(req, res) => {
+
+    const googleToken = req.body.token;
+
+    try {
+
+        const {name, picture, email} = await googleVerify(googleToken);
+        let user;
+
+        const userDb = await User.findOne({email});
+
+        if(!userDb)
+        {
+            user = new User({
+                name, 
+                email,
+                img: picture,
+                google: true,
+                password: "@@@"
+            });
+
+        }else{
+            user = userDb;
+            user.google = true;
+        }
+
+        await user.save();
+
+        const token = await generateToken( user.id);
+    
+        res.json({
+            hi: 'po',
+            token
+        });
+        
+    } catch (error) {
+        res.status(400).json({
+            ok: false,
+            message: "The google token is invalid"
+        });
+    }
+
+}
+
 module.exports = {
-    login
+    login,
+    googleSignIn,
 }
 
